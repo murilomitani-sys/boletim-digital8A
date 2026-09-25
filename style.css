@@ -1,0 +1,175 @@
+/* ===== VARIÁVEIS DE COR =====
+   Assim fica fácil trocar as cores depois. */
+:root {
+  --azul-principal: #1e5fbf;
+  --azul-claro: #e6f0fc;
+  --azul-borda: #c5dbf7;
+  --texto-escuro: #1f2937;
+  --texto-suave: #5b6b82;
+  --branco: #ffffff;
+  --sombra: 0 2px 8px rgba(30, 95, 191, 0.08);
+  --verde-bom: #1a7f4b;
+  --laranja-atencao: #b45309;
+  --cinza-neutro: #6b7280;
+}
+
+/* ===== RESET BÁSICO ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background-color: #f7fafd;
+  color: var(--texto-escuro);
+  line-height: 1.5;
+  padding-bottom: 40px;
+}
+
+/* ===== CABEÇALHO ===== */
+.cabecalho {
+  background-color: var(--azul-principal);
+  color: var(--branco);
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.cabecalho h1 {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.subtitulo {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* ===== CARDS DE RESUMO ===== */
+.cards-resumo {
+  display: grid;
+  /* Colunas flexíveis: adapta automaticamente ao tamanho da tela */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 24px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: var(--azul-claro);
+  border: 1px solid var(--azul-borda);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: var(--sombra);
+}
+
+.card-titulo {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-valor {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--azul-principal);
+}
+
+.card-extra {
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+/* ===== ÁREA DA TABELA ===== */
+.area-tabela {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.area-tabela h2 {
+  font-size: 1.2rem;
+  color: var(--azul-principal);
+  margin-bottom: 12px;
+}
+
+/* Deixa a tabela "rolável" no celular, sem quebrar o layout */
+.tabela-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--branco);
+  min-width: 720px; /* força rolagem lateral em telas pequenas */
+}
+
+thead {
+  background-color: var(--azul-principal);
+  color: var(--branco);
+}
+
+th, td {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--azul-borda);
+}
+
+th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+tbody tr:hover {
+  background-color: var(--azul-claro);
+}
+
+/* Classes de situação (aplicadas pelo JS) */
+.situacao-bom {
+  color: var(--verde-bom);
+  font-weight: 600;
+}
+
+.situacao-atencao {
+  color: var(--laranja-atencao);
+  font-weight: 600;
+}
+
+.situacao-pendente {
+  color: var(--cinza-neutro);
+  font-style: italic;
+}
+
+/* ===== RODAPÉ ===== */
+.rodape {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+/* ===== AJUSTES PARA CELULAR ===== */
+@media (max-width: 600px) {
+  .cabecalho h1 {
+    font-size: 1.4rem;
+  }
+
+  .card-valor {
+    font-size: 1.3rem;
+  }
+
+  th, td {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+}
