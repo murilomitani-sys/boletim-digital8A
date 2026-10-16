@@ -677,5 +677,3 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("botao-cancelar").addEventListener("click", cancelarEdicao);
   document.getElementById("botao-salvar").addEventListener("click", salvarAlteracoes);
 });
-
-pronto
