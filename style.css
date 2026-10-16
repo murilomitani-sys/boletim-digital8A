@@ -173,3 +173,171 @@ tbody tr:hover {
     font-size: 0.85rem;
   }
 }
+
+/* =========================================================
+   NOVOS ESTILOS — ACESSO POR PIN E EDIÇÃO DE DADOS
+   (acrescentados ao final, o visual antigo foi preservado)
+   ========================================================= */
+
+/* Garante que elementos com o atributo "hidden" realmente sumam */
+[hidden] {
+  display: none !important;
+}
+
+/* ===== ÁREA DE ACESSO ===== */
+.area-acesso {
+  background-color: var(--azul-claro);
+  border: 1px solid var(--azul-borda);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  max-width: 460px;
+  margin: 24px auto;
+  padding: 20px;
+}
+
+.area-acesso h2 {
+  font-size: 1.2rem;
+  color: var(--azul-principal);
+  margin-bottom: 10px;
+}
+
+.acesso-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+  margin-bottom: 14px;
+}
+
+.acesso-info strong {
+  color: var(--texto-escuro);
+}
+
+.form-acesso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-acesso label {
+  font-weight: 600;
+  color: var(--texto-escuro);
+}
+
+.form-acesso input {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid var(--azul-borda);
+  border-radius: 8px;
+  background-color: var(--branco);
+  color: var(--texto-escuro);
+}
+
+.form-acesso input:focus {
+  outline: 2px solid var(--azul-principal);
+  outline-offset: 1px;
+}
+
+/* ===== BOTÕES ===== */
+.botao {
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--branco);
+  background-color: var(--azul-principal);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.botao:hover {
+  filter: brightness(1.1);
+}
+
+.botao:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.botao-secundario {
+  color: var(--azul-principal);
+  background-color: var(--branco);
+  border: 1px solid var(--azul-principal);
+}
+
+.barra-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* ===== MENSAGENS ===== */
+.mensagem {
+  min-height: 1.4em;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+.mensagem-erro {
+  color: #b42318;
+  font-weight: 600;
+}
+
+.mensagem-sucesso {
+  color: var(--verde-bom);
+  font-weight: 600;
+}
+
+/* ===== CAMPOS DE EDIÇÃO NA TABELA ===== */
+.campo-edicao {
+  width: 72px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border: 1px solid var(--azul-borda);
+  border-radius: 6px;
+  background-color: var(--branco);
+  color: var(--texto-escuro);
+}
+
+.campo-edicao:focus {
+  outline: 2px solid var(--azul-principal);
+  outline-offset: 1px;
+}
+
+.campo-invalido {
+  border-color: #b42318;
+  background-color: #fef3f2;
+}
+
+.faltas-edicao {
+  display: flex;
+  gap: 6px;
+}
+
+.faltas-edicao .campo-edicao {
+  width: 52px;
+}
+
+/* ===== AJUSTES DOS NOVOS ELEMENTOS NO CELULAR ===== */
+@media (max-width: 600px) {
+  .area-acesso {
+    margin: 16px 20px;
+  }
+
+  .botao {
+    width: 100%;
+  }
+
+  .form-acesso input {
+    width: 100%;
+  }
+}
