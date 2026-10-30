@@ -69,6 +69,33 @@
 
     </section>
 
+    <!-- ÁREA DE GRÁFICOS (somente leitura dos dados já carregados) -->
+    <section class="area-graficos" aria-label="Gráficos do boletim">
+
+      <article class="grafico-card">
+        <h2>Média por disciplina</h2>
+        <div class="grafico-container grafico-alto">
+          <canvas id="grafico-medias-disciplinas" aria-label="Gráfico de barras horizontais com a média de cada disciplina"></canvas>
+        </div>
+      </article>
+
+      <article class="grafico-card">
+        <h2>Evolução da média geral</h2>
+        <div class="grafico-container">
+          <canvas id="grafico-evolucao-trimestres" aria-label="Gráfico de linha com a evolução da média geral por trimestre"></canvas>
+        </div>
+      </article>
+
+      <article class="grafico-card" id="card-faltas">
+        <h2>Faltas por trimestre</h2>
+        <div id="estado-faltas" aria-live="polite"></div>
+        <div class="grafico-container">
+          <canvas id="grafico-faltas-trimestres" aria-label="Gráfico de barras com o total de faltas por trimestre"></canvas>
+        </div>
+      </article>
+
+    </section>
+
     <!-- TABELA DE NOTAS -->
     <section class="area-tabela">
       <h2>Notas por Disciplina</h2>
@@ -108,6 +135,8 @@
     <p>Boletim Digital — Projeto escolar (dados fictícios)</p>
   </footer>
 
+  <!-- Chart.js (CDN) — carregado antes do script.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

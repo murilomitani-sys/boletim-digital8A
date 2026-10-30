@@ -48,60 +48,49 @@ let camposEdicao = [];
    FUNÇÃO: normalizarNota(valor)
    Converte qualquer formato de nota para a escala 0–10.
    Retorna null quando a nota ainda não foi lançada.
-   (Usada para os dados antigos do projeto e para dados da API)
    ========================================================= */
 function normalizarNota(valor) {
-  // Vazio, null ou undefined = nota ainda não lançada
   if (valor === null || valor === undefined || valor === "") {
     return null;
   }
 
-  // Se vier como texto, troca vírgula por ponto e converte para número
   let numero = valor;
   if (typeof valor === "string") {
     numero = parseFloat(valor.replace(",", "."));
   }
 
-  // Se não virou um número válido, tratamos como inválido (null)
   if (isNaN(numero)) {
     return null;
   }
 
-  // Regras de conversão para a escala 0–10
   if (numero >= 0 && numero <= 10) {
-    return numero;          // já está na escala certa
+    return numero;
   }
   if (numero > 10 && numero <= 100) {
-    return numero / 10;     // 82 → 8,2 | 100 → 10,0
+    return numero / 10;
   }
 
-  // Fora das regras: inválido
   return null;
 }
 
 /* =========================================================
    FUNÇÃO: calcularMedia(notas)
-   Recebe um array com notas já normalizadas (ou null).
-   Ignora as null e calcula a média apenas das válidas.
+   Ignora null e calcula a média apenas das válidas.
    Retorna null se não houver nenhuma nota válida.
    ========================================================= */
 function calcularMedia(notas) {
-  // Filtra apenas as notas que existem (não são null)
   const validas = notas.filter((n) => n !== null);
 
-  // Nenhuma nota válida → média indisponível
   if (validas.length === 0) {
     return null;
   }
 
-  // Soma todas e divide pela quantidade
   const soma = validas.reduce((acc, n) => acc + n, 0);
   return soma / validas.length;
 }
 
 /* =========================================================
    FUNÇÃO: somarFaltas(faltas)
-   Recebe um array de números inteiros e retorna a soma.
    ========================================================= */
 function somarFaltas(faltas) {
   return faltas.reduce((acc, f) => acc + f, 0);
@@ -110,7 +99,6 @@ function somarFaltas(faltas) {
 /* =========================================================
    FUNÇÃO: obterFaltas(item)
    Devolve as 3 faltas (1º, 2º e 3º trimestre) de uma disciplina.
-   Se algo vier faltando, usa 0 apenas para exibir na tela.
    ========================================================= */
 function obterFaltas(item) {
   const lista = Array.isArray(item.faltas) ? item.faltas : [];
@@ -119,7 +107,6 @@ function obterFaltas(item) {
 
 /* =========================================================
    FUNÇÃO: definirSituacao(media)
-   Define a situação da disciplina conforme a média.
    ========================================================= */
 function definirSituacao(media) {
   if (media === null) {
@@ -133,8 +120,6 @@ function definirSituacao(media) {
 
 /* =========================================================
    FUNÇÃO: formatarNota(nota)
-   Formata a nota para exibição (1 casa decimal, com vírgula).
-   Se for null, mostra "—".
    ========================================================= */
 function formatarNota(nota) {
   if (nota === null) {
@@ -145,8 +130,6 @@ function formatarNota(nota) {
 
 /* =========================================================
    FUNÇÃO: criarCelula(texto, classe)
-   Cria uma célula <td> para a tabela.
-   (textContent é seguro: não interpreta HTML)
    ========================================================= */
 function criarCelula(texto, classe) {
   const td = document.createElement("td");
@@ -159,7 +142,6 @@ function criarCelula(texto, classe) {
 
 /* =========================================================
    FUNÇÃO: criarCelulaComElemento(elemento)
-   Cria uma célula <td> que guarda um elemento (campo de edição).
    ========================================================= */
 function criarCelulaComElemento(elemento) {
   const td = document.createElement("td");
@@ -169,7 +151,6 @@ function criarCelulaComElemento(elemento) {
 
 /* =========================================================
    FUNÇÃO: copiarDados(lista)
-   Faz uma cópia da lista para não alterar os dados originais.
    ========================================================= */
 function copiarDados(lista) {
   return JSON.parse(JSON.stringify(lista));
@@ -177,7 +158,6 @@ function copiarDados(lista) {
 
 /* =========================================================
    FUNÇÃO: mostrarMensagem(elemento, texto, tipo)
-   Mostra uma mensagem na tela (tipo: "erro", "sucesso" ou vazio).
    ========================================================= */
 function mostrarMensagem(elemento, texto, tipo) {
   elemento.textContent = texto;
@@ -192,7 +172,6 @@ function mostrarMensagem(elemento, texto, tipo) {
 
 /* =========================================================
    FUNÇÃO: criarCampoEdicao(valorInicial, rotulo)
-   Cria um campo de texto para editar nota ou falta.
    ========================================================= */
 function criarCampoEdicao(valorInicial, rotulo) {
   const campo = document.createElement("input");
@@ -204,7 +183,6 @@ function criarCampoEdicao(valorInicial, rotulo) {
   campo.setAttribute("aria-label", rotulo);
   campo.title = rotulo;
 
-  // Quando o estudante volta a digitar, tira a marca de erro
   campo.addEventListener("input", () => {
     campo.classList.remove("campo-invalido");
   });
@@ -214,41 +192,26 @@ function criarCampoEdicao(valorInicial, rotulo) {
 
 /* =========================================================
    FUNÇÃO: preencherTabela()
-   Monta as linhas da tabela a partir de dadosAtuais.
-   Sempre limpa a tabela antes, para não duplicar linhas.
    ========================================================= */
 function preencherTabela() {
   const corpo = document.getElementById("corpo-tabela");
 
-  // Limpa a tabela antes de reconstruir
   corpo.replaceChildren();
   camposEdicao = [];
 
-  // forEach percorre cada disciplina do array
   dadosAtuais.forEach((item) => {
-    // Normaliza as três notas
     const n1 = normalizarNota(item.tri1);
     const n2 = normalizarNota(item.tri2);
     const n3 = normalizarNota(item.tri3);
-
-    // Calcula a média usando só as notas disponíveis
     const media = calcularMedia([n1, n2, n3]);
-
-    // Pega e soma as faltas
     const faltas = obterFaltas(item);
     const totalFaltas = somarFaltas(faltas);
-
-    // Define a situação
     const situacao = definirSituacao(media);
 
-    // Cria a linha <tr>
     const tr = document.createElement("tr");
-
-    // Célula da disciplina (o nome nunca é editável)
     tr.appendChild(criarCelula(item.disciplina));
 
     if (modoEdicao) {
-      // ----- MODO EDIÇÃO: campos para notas e faltas -----
       const campoTri1 = criarCampoEdicao(n1 === null ? "" : String(n1).replace(".", ","), "Nota do 1º trimestre");
       const campoTri2 = criarCampoEdicao(n2 === null ? "" : String(n2).replace(".", ","), "Nota do 2º trimestre");
       const campoTri3 = criarCampoEdicao(n3 === null ? "" : String(n3).replace(".", ","), "Nota do 3º trimestre");
@@ -260,11 +223,8 @@ function preencherTabela() {
       tr.appendChild(criarCelulaComElemento(campoTri1));
       tr.appendChild(criarCelulaComElemento(campoTri2));
       tr.appendChild(criarCelulaComElemento(campoTri3));
-
-      // Média continua sendo mostrada (com os dados já salvos)
       tr.appendChild(criarCelula(formatarNota(media)));
 
-      // Célula das faltas com os 3 campos juntos
       const divFaltas = document.createElement("div");
       divFaltas.classList.add("faltas-edicao");
       divFaltas.appendChild(campoFalta1);
@@ -272,7 +232,6 @@ function preencherTabela() {
       divFaltas.appendChild(campoFalta3);
       tr.appendChild(criarCelulaComElemento(divFaltas));
 
-      // Guarda os campos para ler na hora de salvar
       camposEdicao.push({
         tri1: campoTri1,
         tri2: campoTri2,
@@ -280,33 +239,24 @@ function preencherTabela() {
         faltas: [campoFalta1, campoFalta2, campoFalta3]
       });
     } else {
-      // ----- MODO NORMAL: só mostra os valores -----
       tr.appendChild(criarCelula(formatarNota(n1)));
       tr.appendChild(criarCelula(formatarNota(n2)));
       tr.appendChild(criarCelula(formatarNota(n3)));
-
-      // Célula da média
       tr.appendChild(criarCelula(formatarNota(media)));
-
-      // Célula das faltas
       tr.appendChild(criarCelula(totalFaltas));
     }
 
-    // Célula da situação (com classe de cor)
     let classeSituacao = "situacao-pendente";
     if (situacao === "Bom desempenho") classeSituacao = "situacao-bom";
     if (situacao === "Atenção") classeSituacao = "situacao-atencao";
     tr.appendChild(criarCelula(situacao, classeSituacao));
 
-    // Adiciona a linha pronta na tabela
     corpo.appendChild(tr);
   });
 }
 
 /* =========================================================
    FUNÇÃO: preencherCards()
-   Calcula e exibe os valores dos cards de resumo.
-   Os cards só têm o texto trocado, então não duplicam.
    ========================================================= */
 function preencherCards() {
   let somaMedias = 0;
@@ -321,29 +271,21 @@ function preencherCards() {
     const n3 = normalizarNota(item.tri3);
     const media = calcularMedia([n1, n2, n3]);
 
-    // Soma faltas de todas as disciplinas
     totalFaltas += somarFaltas(obterFaltas(item));
 
-    // Conta situações
     const situacao = definirSituacao(media);
     if (situacao === "Bom desempenho") qtdBom++;
     if (situacao === "Atenção") qtdAtencao++;
 
-    // Acumula a média (só quando existir)
     if (media !== null) {
       somaMedias += media;
       qtdMedias++;
     }
   });
 
-  // Média geral do boletim
   const mediaGeral = qtdMedias > 0 ? somaMedias / qtdMedias : null;
-
-  // ATENÇÃO: frequência FICTÍCIA apenas para demonstração.
-  // No futuro, esse valor será tratado de outra forma (não vem das faltas).
   const frequenciaDemonstrativa = 92;
 
-  // Atualiza os cards no DOM
   document.getElementById("media-geral").textContent = formatarNota(mediaGeral);
   document.getElementById("total-faltas").textContent = totalFaltas;
   document.getElementById("qtd-bom").textContent = qtdBom;
@@ -354,28 +296,23 @@ function preencherCards() {
 
 /* =========================================================
    FUNÇÃO: atualizarTela()
-   Reconstrói tabela e cards. Pode ser chamada várias vezes.
    ========================================================= */
 function atualizarTela() {
   preencherTabela();
   preencherCards();
+  atualizarGraficos();
 }
 
 /* =========================================================
    FUNÇÃO: lerNotaDigitada(texto)
-   Valida a nota digitada no editor.
-   Aceita: vazio, número de 0 a 10 com ponto ou vírgula.
-   Não aceita 75, 82, 100, -1, 11, abc.
    ========================================================= */
 function lerNotaDigitada(texto) {
   const limpo = texto.trim();
 
-  // Vazio vira null (nota não lançada)
   if (limpo === "") {
     return { valido: true, valor: null };
   }
 
-  // Só dígitos, com no máximo um ponto ou uma vírgula decimal
   if (!/^\d+([.,]\d+)?$/.test(limpo)) {
     return { valido: false, valor: null };
   }
@@ -390,8 +327,6 @@ function lerNotaDigitada(texto) {
 
 /* =========================================================
    FUNÇÃO: lerFaltaDigitada(texto)
-   Valida as faltas: somente inteiro, zero ou maior.
-   Vazio NÃO é aceito.
    ========================================================= */
 function lerFaltaDigitada(texto) {
   const limpo = texto.trim();
@@ -410,8 +345,6 @@ function lerFaltaDigitada(texto) {
 
 /* =========================================================
    FUNÇÃO: coletarEdicao()
-   Lê todos os campos, valida e monta a lista de disciplinas.
-   Marca em vermelho os campos inválidos.
    ========================================================= */
 function coletarEdicao() {
   let tudoValido = true;
@@ -420,17 +353,14 @@ function coletarEdicao() {
   dadosAtuais.forEach((item, indice) => {
     const campos = camposEdicao[indice];
 
-    // Valida as 3 notas
     const r1 = lerNotaDigitada(campos.tri1.value);
     const r2 = lerNotaDigitada(campos.tri2.value);
     const r3 = lerNotaDigitada(campos.tri3.value);
 
-    // Valida as 3 faltas
     const f1 = lerFaltaDigitada(campos.faltas[0].value);
     const f2 = lerFaltaDigitada(campos.faltas[1].value);
     const f3 = lerFaltaDigitada(campos.faltas[2].value);
 
-    // Marca ou desmarca erro em cada campo
     const verificacoes = [
       [campos.tri1, r1],
       [campos.tri2, r2],
@@ -449,7 +379,6 @@ function coletarEdicao() {
       }
     });
 
-    // Monta a disciplina (mantém o nome e outros campos que já existiam)
     disciplinas.push({
       ...item,
       disciplina: item.disciplina,
@@ -465,7 +394,6 @@ function coletarEdicao() {
 
 /* =========================================================
    FUNÇÃO: entrarComPin()
-   Abre o boletim pela API usando o PIN digitado.
    ========================================================= */
 async function entrarComPin() {
   const campoPin = document.getElementById("campo-pin");
@@ -526,9 +454,7 @@ async function entrarComPin() {
     return;
   }
 
-  // DADOS DA API > DADOS LOCAIS
   if (resultado && resultado.dados !== null && resultado.dados !== undefined) {
-    // Já existem dados salvos: usa exatamente o que veio da API
     if (!Array.isArray(resultado.dados.disciplinas)) {
       mostrarMensagem(mensagem, "Os dados recebidos estão em um formato inesperado.", "erro");
       botaoEntrar.disabled = false;
@@ -536,17 +462,14 @@ async function entrarComPin() {
     }
     dadosAtuais = copiarDados(resultado.dados.disciplinas);
   } else {
-    // Não existem dados salvos: usa os dados fictícios do projeto (sem salvar)
     dadosAtuais = copiarDados(dadosBrutos);
   }
 
-  // Login bem-sucedido: guarda o PIN só na memória e limpa o campo
   pinSessao = pinDigitado;
   campoPin.value = "";
   mostrarMensagem(mensagem, "", "");
   botaoEntrar.disabled = false;
 
-  // Troca a área de acesso pelo boletim
   document.getElementById("area-acesso").hidden = true;
   document.getElementById("area-boletim").hidden = false;
 
@@ -577,15 +500,12 @@ function cancelarEdicao() {
 
 /* =========================================================
    FUNÇÃO: salvarAlteracoes()
-   Valida os campos e envia para a API com PUT.
-   Se algo falhar, os campos continuam como o estudante digitou.
    ========================================================= */
 async function salvarAlteracoes() {
   const botaoSalvar = document.getElementById("botao-salvar");
   const botaoCancelar = document.getElementById("botao-cancelar");
   const mensagem = document.getElementById("mensagem-edicao");
 
-  // 1) Validar tudo antes de enviar
   const coleta = coletarEdicao();
   if (!coleta.valido) {
     mostrarMensagem(
@@ -596,7 +516,6 @@ async function salvarAlteracoes() {
     return;
   }
 
-  // 2) Enviar para a API
   botaoSalvar.disabled = true;
   botaoCancelar.disabled = true;
   mostrarMensagem(mensagem, "Salvando...", "");
@@ -643,7 +562,6 @@ async function salvarAlteracoes() {
     return;
   }
 
-  // 3) Sucesso: atualiza os dados e a tela
   dadosAtuais = copiarDados(coleta.disciplinas);
   modoEdicao = false;
   document.getElementById("botao-alterar").hidden = false;
@@ -658,22 +576,336 @@ async function salvarAlteracoes() {
 
 /* =========================================================
    INICIALIZAÇÃO
-   Roda quando a página termina de carregar.
-   Antes do login aparece somente a área de PIN.
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  // Mostra turma e chamada (apenas texto, não editável)
   document.getElementById("acesso-turma").textContent = CONFIG_ALUNO.turma;
   document.getElementById("acesso-chamada").textContent = CONFIG_ALUNO.numeroChamada;
 
-  // Formulário de acesso por PIN
   document.getElementById("form-acesso").addEventListener("submit", (evento) => {
     evento.preventDefault();
     entrarComPin();
   });
 
-  // Botões de edição
   document.getElementById("botao-alterar").addEventListener("click", iniciarEdicao);
   document.getElementById("botao-cancelar").addEventListener("click", cancelarEdicao);
   document.getElementById("botao-salvar").addEventListener("click", salvarAlteracoes);
 });
+
+/* =========================================================
+   GRÁFICOS — SOMENTE LEITURA
+   Esta seção apenas lê dadosAtuais, calcula e desenha.
+   NÃO escreve em notas, faltas, disciplinas ou estado.
+   NÃO faz fetch. NÃO altera o payload da API.
+   ========================================================= */
+
+let graficoMedias = null;
+let graficoEvolucao = null;
+let graficoFaltas = null;
+
+/* Referência interna usada SOMENTE pelo JS para avaliar a situação
+   geral de faltas. Não é exibida em lugar nenhum da interface. */
+const REFERENCIA_INTERNA_FALTAS = 350;
+
+/* -------- Cor do texto/grade/tooltip conforme o tema -------- */
+function obterCoresTema() {
+  const raiz = getComputedStyle(document.documentElement);
+  const ler = (nome, padrao) =>
+    (raiz.getPropertyValue(nome) || "").trim() || padrao;
+
+  return {
+    azulPrincipal: ler("--azul-principal", "#1e5fbf"),
+    azulClaro: ler("--azul-claro", "#e6f0fc"),
+    azulBorda: ler("--azul-borda", "#c5dbf7"),
+    textoEscuro: ler("--texto-escuro", "#1f2937"),
+    textoSuave: ler("--texto-suave", "#5b6b82"),
+    verdeBom: ler("--verde-bom", "#1a7f4b"),
+    laranjaAtencao: ler("--laranja-atencao", "#b45309"),
+    cinzaNeutro: ler("--cinza-neutro", "#6b7280"),
+    branco: ler("--branco", "#ffffff")
+  };
+}
+
+/* -------- CÁLCULOS (sem tocar em dadosAtuais) -------- */
+
+/* Array de { disciplina, media } — media pode ser null. */
+function calcularMediasPorDisciplina() {
+  return dadosAtuais.map((item) => {
+    const n1 = normalizarNota(item.tri1);
+    const n2 = normalizarNota(item.tri2);
+    const n3 = normalizarNota(item.tri3);
+    return {
+      disciplina: item.disciplina,
+      media: calcularMedia([n1, n2, n3])
+    };
+  });
+}
+
+/* [mediaTri1, mediaTri2, mediaTri3] — cada uma pode ser null. */
+function calcularEvolucaoGeral() {
+  const mediasTri = [[], [], []];
+
+  dadosAtuais.forEach((item) => {
+    const notas = [
+      normalizarNota(item.tri1),
+      normalizarNota(item.tri2),
+      normalizarNota(item.tri3)
+    ];
+    notas.forEach((n, i) => {
+      if (n !== null) {
+        mediasTri[i].push(n);
+      }
+    });
+  });
+
+  return mediasTri.map((lista) => {
+    if (lista.length === 0) return null;
+    const soma = lista.reduce((acc, n) => acc + n, 0);
+    return soma / lista.length;
+  });
+}
+
+/* { tri1, tri2, tri3, total } — faltas por trimestre e total interno. */
+function calcularFaltasPorTrimestre() {
+  let tri1 = 0;
+  let tri2 = 0;
+  let tri3 = 0;
+
+  dadosAtuais.forEach((item) => {
+    const faltas = obterFaltas(item);
+    tri1 += faltas[0];
+    tri2 += faltas[1];
+    tri3 += faltas[2];
+  });
+
+  return {
+    tri1,
+    tri2,
+    tri3,
+    total: tri1 + tri2 + tri3
+  };
+}
+
+/* Aplica estado de perigo ao card de faltas — apenas classe + badge. */
+function avaliarPerigoFaltas(total) {
+  const card = document.getElementById("card-faltas");
+  const estado = document.getElementById("estado-faltas");
+  if (!card || !estado) return;
+
+  // Faixa crítica: somente quando atinge a referência interna.
+  if (total >= REFERENCIA_INTERNA_FALTAS) {
+    card.classList.add("perigo");
+    estado.replaceChildren();
+    const badge = document.createElement("span");
+    badge.classList.add("badge-perigo");
+    badge.textContent = "Perigo";
+    estado.appendChild(badge);
+  } else {
+    card.classList.remove("perigo");
+    estado.replaceChildren();
+  }
+}
+
+/* -------- DESENHO DOS GRÁFICOS -------- */
+
+function atualizarGraficoMedias() {
+  const canvas = document.getElementById("grafico-medias-disciplinas");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  if (graficoMedias) {
+    graficoMedias.destroy();
+    graficoMedias = null;
+  }
+
+  const cores = obterCoresTema();
+  const itens = calcularMediasPorDisciplina();
+  const rotulos = itens.map((i) => i.disciplina);
+  const valores = itens.map((i) => (i.media === null ? null : i.media));
+
+  graficoMedias = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: rotulos,
+      datasets: [
+        {
+          label: "Média",
+          data: valores,
+          backgroundColor: cores.azulPrincipal,
+          borderColor: cores.azulPrincipal,
+          borderWidth: 1,
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      scales: {
+        x: {
+          min: 0,
+          max: 10,
+          ticks: { color: cores.textoSuave },
+          grid: { color: cores.azulBorda }
+        },
+        y: {
+          ticks: { color: cores.textoEscuro, autoSkip: false, font: { size: 11 } },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.x;
+              if (v === null || v === undefined) {
+                return "Nota ainda não disponível";
+              }
+              return "Média: " + v.toFixed(1).replace(".", ",");
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function atualizarGraficoEvolucao() {
+  const canvas = document.getElementById("grafico-evolucao-trimestres");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  if (graficoEvolucao) {
+    graficoEvolucao.destroy();
+    graficoEvolucao = null;
+  }
+
+  const cores = obterCoresTema();
+  const medias = calcularEvolucaoGeral();
+
+  graficoEvolucao = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels: ["1º Tri", "2º Tri", "3º Tri"],
+      datasets: [
+        {
+          label: "Média geral",
+          data: medias,
+          borderColor: cores.azulPrincipal,
+          backgroundColor: cores.azulClaro,
+          pointBackgroundColor: cores.azulPrincipal,
+          pointBorderColor: cores.branco,
+          pointRadius: 5,
+          tension: 0.3,
+          spanGaps: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      scales: {
+        y: {
+          min: 0,
+          max: 10,
+          ticks: { color: cores.textoSuave },
+          grid: { color: cores.azulBorda }
+        },
+        x: {
+          ticks: { color: cores.textoEscuro },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y;
+              if (v === null || v === undefined) {
+                return "Sem notas neste trimestre";
+              }
+              return "Média: " + v.toFixed(1).replace(".", ",");
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function atualizarGraficoFaltas() {
+  const canvas = document.getElementById("grafico-faltas-trimestres");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  if (graficoFaltas) {
+    graficoFaltas.destroy();
+    graficoFaltas = null;
+  }
+
+  const cores = obterCoresTema();
+  const dados = calcularFaltasPorTrimestre();
+
+  // Avalia situação geral (usa apenas referência interna; não exibe 350).
+  avaliarPerigoFaltas(dados.total);
+
+  graficoFaltas = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: ["1º Tri", "2º Tri", "3º Tri"],
+      datasets: [
+        {
+          label: "Faltas",
+          data: [dados.tri1, dados.tri2, dados.tri3],
+          backgroundColor: cores.azulPrincipal,
+          borderColor: cores.azulPrincipal,
+          borderWidth: 1,
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: cores.textoSuave, precision: 0 },
+          grid: { color: cores.azulBorda }
+        },
+        x: {
+          ticks: { color: cores.textoEscuro },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y;
+              return v + (v === 1 ? " falta" : " faltas");
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function atualizarGraficos() {
+  if (typeof Chart === "undefined") return;
+  atualizarGraficoMedias();
+  atualizarGraficoEvolucao();
+  atualizarGraficoFaltas();
+}
+
+// Só para conferir o comportamento visual — não persiste nada
+const original = dadosAtuais;
+dadosAtuais = original.map(d => ({ ...d, faltas: [200, 200, 200] }));
+atualizarGraficos();
+// Para reverter:
+dadosAtuais = original;
+atualizarGraficos();

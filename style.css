@@ -341,3 +341,95 @@ tbody tr:hover {
     width: 100%;
   }
 }
+
+/* =========================================================
+   GRÁFICOS — acrescentados ao final, sem alterar o restante.
+   Desktop: 3 colunas | Tablet: 2 colunas | Celular: 1 coluna
+   ========================================================= */
+
+.area-graficos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 24px;
+}
+
+.grafico-card {
+  background-color: var(--azul-claro);
+  border: 1px solid var(--azul-borda);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0; /* impede overflow do grid */
+}
+
+.grafico-card h2 {
+  font-size: 1rem;
+  color: var(--azul-principal);
+  margin: 0;
+}
+
+.grafico-container {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+.grafico-container.grafico-alto {
+  height: 420px;
+}
+
+/* Estado de perigo (aplicado pelo JS ao card de faltas).
+   Não exibe "350", "limite" ou percentual — apenas destaca o card. */
+.grafico-card.perigo {
+  border-color: var(--laranja-atencao);
+  box-shadow: 0 4px 14px rgba(180, 83, 9, 0.20);
+}
+
+#estado-faltas {
+  min-height: 1.4em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.badge-perigo {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: var(--laranja-atencao);
+  color: var(--branco);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* ===== RESPONSIVIDADE DOS GRÁFICOS ===== */
+@media (max-width: 900px) {
+  .area-graficos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .area-graficos {
+    grid-template-columns: 1fr;
+    padding: 0 16px 20px;
+  }
+
+  .grafico-container {
+    height: 240px;
+  }
+
+  .grafico-container.grafico-alto {
+    height: 520px; /* nomes das disciplinas legíveis no celular */
+  }
+}
